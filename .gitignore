@@ -1,0 +1,38 @@
+# Виртуальное окружение
+venv/
+.venv/
+env/
+
+# Кэш Python
+__pycache__/
+*.pyc
+*.pyo
+
+# Базы данных
+*.db
+*.sqlite
+*.sqlite3
+
+# IDE
+.vscode/
+.idea/
+*.iml
+
+# Временные файлы
+*.log
+*.tmp
+
+# Файлы загрузок
+uploads/
+
+# Системные файлы
+.DS_Store
+Thumbs.db
+
+# Секреты
+.env
+*.pem
+*.key
+
+# Проектные файлы
+weights.json
