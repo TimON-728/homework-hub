@@ -23,7 +23,9 @@ __pycache__/
 *.tmp
 
 # Файлы загрузок
-uploads/
+uploads/*.jpg
+uploads/*.png
+uploads/*.jpeg
 
 # Системные файлы
 .DS_Store
@@ -36,3 +38,4 @@ Thumbs.db
 
 # Проектные файлы
 weights.json
+git_token
