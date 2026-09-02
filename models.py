@@ -14,7 +14,7 @@ class Homework(Base):
     id = Column(Integer, primary_key=True)
     subject = Column(String)
     description = Column(String)
-    photos = Column
+    photos = Column(JSON)
 
 Base.metadata.create_all(engine)
 
