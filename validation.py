@@ -8,7 +8,7 @@ class HomeworkCreate(BaseModel):
 
     subject: str
     task: str
-    photo: list[str] = []
+    photos: list[str] = []
 
     @field_validator('city', 'school', 'class_name', 'subject')
     @classmethod
@@ -19,7 +19,7 @@ class HomeworkCreate(BaseModel):
 
     @model_validator(mode='after')
     def check_task_or_photo(self):
-        if not self.task.strip() and not self.photo:
+        if not self.task.strip() and not self.photos:
             raise ValueError('Задание и фото не могут быть одновременно пустыми')
         return self
 
@@ -41,7 +41,7 @@ class TimetableCreate(BaseModel):
     city: str
     school: str
     class_name: str
-    
+
     timetable: str
     date_on: date
 

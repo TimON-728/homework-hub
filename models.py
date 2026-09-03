@@ -13,8 +13,8 @@ class Homework(Base):
     __tablename__ = "homework"
     id = Column(Integer, primary_key=True)
 
-    subject = Column(String)
-    description = Column(String)
+    subject = Column(String, nullable=False)
+    task = Column(String)
     photos = Column(JSON)
 
     city = Column(String, nullable=False)
