@@ -34,10 +34,10 @@ def read_homework_by_class(db: Session, city: str, school: str, class_name: str)
     ).all()
 
 
-def get_hw_dy_id(db: Session, id: int):
+def get_hw_dy_id(db: Session, hw_id: int):
     return db.query(Homework).filter(
-        Homework.id == id
-    ).all()
+        Homework.id == hw_id
+    ).first()
 
 
 #==============UPDATE==============
@@ -64,15 +64,43 @@ def delete_subject(db: Session, hw_id: int):
 #==============CREATE==============
 def add_timetable(db: Session, data: TimetableCreate) -> TimeTable:
     new_tt = TimeTable(
-        city = TimeTable.city,
-        school = TimeTable.school,
-        class_name = TimeTable.class_name,
+        city = data.city,
+        school = data.school,
+        class_name = data.class_name,
 
-        timetable = TimeTable.timetable,
-        date_on = TimeTable.date_on,
+        timetable = data.timetable,
+        date_on = data.date_on,
     )
 
     db.add(new_tt)
     db.commit()
     db.refresh(new_tt)
     return new_tt
+
+
+#==============READ===============
+def read_timetable_by_week(db: Session, city: str, school: str, class_name: str):
+    today = date.today()
+    week_back = today - timedelta(days=7)
+    return db.query(TimeTable).filter(
+        TimeTable.city == city,
+        TimeTable.school == school,
+        TimeTable.class_name == class_name,
+        TimeTable.date_on >= week_back
+    ).all()
+
+
+#==============UPDATE==============
+def update_timetable(db: Session, city: str, school: str, class_name: str, date_on: date, new_timetable: str):
+    tt = db.query(TimeTable).filter(
+        TimeTable.city == city,
+        TimeTable.school == school,
+        TimeTable.class_name == class_name,
+        TimeTable.date_on == date_on
+    ).first()
+
+    if tt:
+        tt.timetable = new_timetable
+        db.commit()
+        db.refresh(tt)
+    return tt
