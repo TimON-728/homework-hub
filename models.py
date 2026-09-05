@@ -1,13 +1,5 @@
-from sqlalchemy import create_engine
-from sqlalchemy.orm import declarative_base, sessionmaker
 from sqlalchemy import Column, Integer, String, JSON, Date, UniqueConstraint
-from sqlalchemy.sql import func
-
-engine = create_engine("sqlite:///./homework.db")
-
-SessionLocal = sessionmaker(bind=engine)
-
-Base = declarative_base()
+from database import Base, engine
 
 class Homework(Base):
     __tablename__ = "homework"
