@@ -12,8 +12,8 @@ def render_ui():
 
     # Получаем сессию
     db = next(get_db())
-    result = db.query(Homework).with_entities(Homework.city, Homework.school, Homework.class_name).all()
-    st.
+    city, school, class_name = db.query(Homework).with_entities(Homework.city, Homework.school, Homework.class_name).all() #ПЕРЕПИСАТЬ
+    
     db.close()
 
 render_ui()
