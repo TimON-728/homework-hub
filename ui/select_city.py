@@ -6,31 +6,17 @@ from crud import *
 from database import *
 
 
-def render_ui():
-    if "selected_city" not in st.session_state:
-        st.session_state.selected_city = None
-
+def select_city():
     st.title('📚 HOMEWORK-HUB 📚')
     st.subheader('🏠 Место, где вы можете удобно хранить ваше домашнее задание')
 
     # Получаем сессию
     db = next(get_db())
     city_list = []
-    school_list = []
-    class_list = []
 
-    results = db.query(Homework).with_entities(
-        Homework.city, Homework.school, Homework.class_name
-    ).all()
+    results = db.query(Homework).with_entities(Homework.city).all()
 
-    for city, school, class_name in results:
-        city_list.append(city)
-        school_list.append(school)
-        class_list.append(class_name)
-
-    city_list = list(set(city_list))
-    school_list = list(set(school_list))
-    class_list = list(set(class_list))    
+    city_list = list(set(city[0] for city in results))   
 
     if st.session_state.selected_city is None: 
         st.markdown('#### Выберите город или добавте новый')
@@ -45,9 +31,10 @@ def render_ui():
 
         if st.button("➕ Добавить город", use_container_width=True):
             st.session_state.selected_city = "add city"
+            st.rerun()
 
     elif st.session_state.selected_city == "add city":
-        new_city = st.text_area('Введите название нового города')
+        new_city = st.text_input('Введите название нового города')
 
         col1, col2 = st.columns(2)
         if st.session_state.selected_city == "add city":
@@ -65,5 +52,3 @@ def render_ui():
                     st.rerun()
 
     db.close()
-
-render_ui()
