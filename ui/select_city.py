@@ -53,6 +53,5 @@ def select_city():
 
     if st.session_state.selected_city not in ["add city", None]:
         st.session_state.page = 'school_select'
-        print('Переключаю')
         db.close()
         st.rerun()

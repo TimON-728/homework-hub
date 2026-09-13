@@ -37,5 +37,3 @@ def Regist():
             )
         except ValidationError as e:
             st.error(f'Ошибка валидации: {e}')
-
-        print("ДАААААА")
