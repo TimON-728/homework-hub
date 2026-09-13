@@ -54,4 +54,5 @@ def select_class():
                     st.session_state.selected_class = None
                     st.rerun()
 
+    st.session_state.page = 'homework_select'
     db.close()

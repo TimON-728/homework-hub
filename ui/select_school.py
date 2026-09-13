@@ -53,4 +53,5 @@ def select_school():
                     st.session_state.selected_school = None
                     st.rerun()
 
+    st.session_state.page = 'class_select'
     db.close()

@@ -8,18 +8,21 @@ import streamlit as st
 from pydantic import ValidationError
 
 def Regist():
-    if "selected_city" not in st.session_state:
-        st.session_state.selected_city = None
-    if "selected_school" not in st.session_state:
-        st.session_state.selected_school = None
-    if "selected_class" not in st.session_state:
-        st.session_state.selected_class = None
+    defaults = {
+        "page": "city_selection",
+        "selected_city": None,
+        "selected_school": None,
+        "selected_class": None,
+    }
+    for key, value in defaults.items():
+        if key not in st.session_state:
+            st.session_state[key] = value
 
-    if st.session_state.selected_city is None:
+    if st.session_state.page == 'city_select':
         select_city()
-    if (st.session_state.selected_school is None) and (st.session_state.selected_city != None):
+    elif st.session_state.page == 'school_select':
         select_school()
-    if (st.session_state.selected_class is None) and (st.session_state.selected_school != None):
+    elif st.session_state.page == 'class_select':
         select_class()
 
     city = st.session_state.selected_city

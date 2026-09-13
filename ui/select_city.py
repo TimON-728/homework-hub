@@ -51,4 +51,5 @@ def select_city():
                     st.session_state.selected_city = None
                     st.rerun()
 
+    st.session_state.page = 'school_select'
     db.close()
