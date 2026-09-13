@@ -54,5 +54,8 @@ def select_class():
                     st.session_state.selected_class = None
                     st.rerun()
 
-    st.session_state.page = 'homework_select'
-    db.close()
+    if st.session_state.selected_class not in ["add class", None]:
+        st.session_state.page = 'homework_select'
+        print('Переключаю')
+        db.close()
+        st.rerun()

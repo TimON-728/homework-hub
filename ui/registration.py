@@ -1,6 +1,6 @@
-from select_city import select_city
-from select_school import select_school
-from select_class import select_class
+from ui.select_city import select_city
+from ui.select_school import select_school
+from ui.select_class import select_class
 from validation import Registration
 from crud import *
 
@@ -9,7 +9,7 @@ from pydantic import ValidationError
 
 def Regist():
     defaults = {
-        "page": "city_selection",
+        "page": "city_select",
         "selected_city": None,
         "selected_school": None,
         "selected_class": None,
@@ -24,22 +24,18 @@ def Regist():
         select_school()
     elif st.session_state.page == 'class_select':
         select_class()
+    elif st.session_state.page == 'homework_select':
+        city = st.session_state.selected_city
+        school = st.session_state.selected_school
+        class_name = st.session_state.selected_class
 
-    city = st.session_state.selected_city
-    school = st.session_state.selected_school
-    class_name = st.session_state.selected_class
+        try:
+            reg = Registration(
+                city=city,
+                school=school,
+                class_name=class_name
+            )
+        except ValidationError as e:
+            st.error(f'Ошибка валидации: {e}')
 
-    try:
-        reg = Registration(
-            city,
-            school,
-            class_name
-        )
-        #
-        #Здесь будет логика изменения дз
-        #
-        st.session_state.selected_city = None
-        st.session_state.selected_school = None
-        st.session_state.selected_class = None
-    except ValidationError as e:
-        st.error(f'Ошибка валидации: {e}')
+        print("ДАААААА")

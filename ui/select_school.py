@@ -53,5 +53,8 @@ def select_school():
                     st.session_state.selected_school = None
                     st.rerun()
 
-    st.session_state.page = 'class_select'
-    db.close()
+    if st.session_state.selected_school not in ["add school", None]:
+        st.session_state.page = 'class_select'
+        print('Переключаю')
+        db.close()
+        st.rerun()
