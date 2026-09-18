@@ -8,6 +8,8 @@ defaults = {
     "selected_city": None,
     "selected_school": None,
     "selected_class": None,
+    "subject": None,
+    "new_subject": False
 }
 
 for key, value in defaults.items():
