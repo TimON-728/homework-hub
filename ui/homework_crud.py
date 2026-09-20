@@ -1,6 +1,8 @@
 from crud import *
 from database import *
+from photos_utilits import *
 
+import json
 import streamlit as st
 from pydantic import ValidationError
 from streamlit_extras.floating_button import floating_button
@@ -28,8 +30,10 @@ def work_with_homework():
             with cols[col_id]:
                 st.markdown(f'**{hw.subject}**')
                 st.write(hw.task)
-                if hw.photo:
-                    st.image(hw.photo)
+                if hw.photos:
+                    photos = json.loads(hw.photos)
+                    for photo_path in photos:
+                        st.image(photo_path)
 
 
         if floating_button("Добавить", key="add_btn", icon=":material/add:"):
@@ -61,8 +65,9 @@ def work_with_homework():
 
         elif st.session_state.subject is not None:
             col1, col2 = st.columns(2)
+            new_subject = st.session_state.subject
 
-            if st.session_state.page == "add subject":
+            if st.session_state.subject == "add subject":
                 new_subject = st.text_input('Введите новый предмет')
 
                 with col1:
@@ -79,12 +84,16 @@ def work_with_homework():
                         st.session_state.subject = None
                         st.rerun()
 
-            new_task = st.text_input('Введите предмет')
-            new_photo = st.file_uploader('Вставте одно или несколько фотографий')
+            new_task = st.text_input('Введите задание')
+            new_photo = st.file_uploader('Вставте одно или несколько фотографий', accept_multiple_files=True)
 
             with col1:
                 if st.button('Подтвердить'):
                     try:
+                        photos_path = save_photos(new_photo)
+
+                        photos_json = json.dumps(photos_path)
+
                         reg = Registration(
                             city=city,
                             school=school,
@@ -92,21 +101,33 @@ def work_with_homework():
                         )
 
                         hw_validation = HomeworkCreate(
-                            city=city,
-                            school=school,
-                            class_name=class_name,
+                            city=reg.city,
+                            school=reg.school,
+                            class_name=reg.class_name,
 
                             subject=new_subject,
                             task=new_task,
-                            photos=new_photo
+                            photos=photos_json
                         )
-                    except ValidationError as e:
+
+                        if st.session_state.new_subject:
+                            add_homework(db=db, data=hw_validation)
+
+                        else:
+                            for hw in hws:
+                                if hw.subject == new_subject:
+                                    update_homework(db=db, hw_id=hw.id, new_data=hw_validation)
+
+                        st.session_state.subject = None
+                        st.session_state.new_subject = False
+                        st.rerun()
+                    except (ValidationError, ValueError) as e:
                         st.error(f'Ошибка валидации: {e}')
 
             with col2:
                 if st.button('Назад'):
-                    st.session_state.selected_school = None
+                    st.session_state.subject = None
+                    st.session_state.new_subject = False
                     st.rerun()
 
-    db.close
-
+    db.close()

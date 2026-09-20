@@ -3,10 +3,13 @@ from datetime import date, timedelta
 
 from models import *
 from validation import *
+from photos_utilits import *
 
 #=============HOMEWORK=============
 #==============CREATE==============
 def add_homework(db: Session, data: HomeworkCreate) -> Homework:
+    old_photos = data.photos
+
     new_hw = Homework(
         subject = data.subject,
         task = data.task,
@@ -20,6 +23,8 @@ def add_homework(db: Session, data: HomeworkCreate) -> Homework:
     db.add(new_hw)
     db.commit()
     db.refresh(new_hw)
+
+    delete_photos(old_photos)
 
     return new_hw
 
