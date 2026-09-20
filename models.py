@@ -15,7 +15,6 @@ class Homework(Base):
 
     __table_args__ = (
         UniqueConstraint('city', 'school', 'class_name', 'subject', name='unique_subject'),
-        UniqueConstraint('city', 'school', 'class_name', name='unique_class'),
     )
 
 

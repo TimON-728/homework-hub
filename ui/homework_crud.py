@@ -63,36 +63,33 @@ def work_with_homework():
                 st.session_state.subject = "add subject"
                 st.rerun()
 
-        elif st.session_state.subject is not None:
-            col1, col2 = st.columns(2)
-            new_subject = st.session_state.subject
+            if floating_button("Назад", key="bck_btn"):
+                        st.session_state.page = "homework_select"
+                        st.rerun()
 
+        elif st.session_state.subject is not None:
             if st.session_state.subject == "add subject":
                 new_subject = st.text_input('Введите новый предмет')
-
-                with col1:
-                    if st.button('Подтвердить'):
-                        if new_subject and new_subject.strip():
-                            st.session_state.subject = new_subject
-                            st.session_state.new_subject = True
-                            st.rerun()
-                        else:
-                            st.warning('Название предмета не может быть пустым')
-
-                with col2:
-                    if st.button('Назад'):
-                        st.session_state.subject = None
-                        st.rerun()
 
             new_task = st.text_input('Введите задание')
             new_photo = st.file_uploader('Вставте одно или несколько фотографий', accept_multiple_files=True)
 
+            col1, col2 = st.columns(2)
             with col1:
-                if st.button('Подтвердить'):
+                if st.button('Подтвердить', key='confirm_homework'):
                     try:
-                        photos_path = save_photos(new_photo)
+                        if st.session_state.subject == "add subject":
+                            if new_subject and new_subject.strip():
+                                st.session_state.subject = new_subject
+                                st.session_state.new_subject = True
+                            else:
+                                st.error('Название предмета не может быть пустым')
+                                st.stop()
 
-                        photos_json = json.dumps(photos_path)
+                        new_subject = st.session_state.subject
+
+
+                        photos_path = save_photos(new_photo)
 
                         reg = Registration(
                             city=city,
@@ -107,7 +104,7 @@ def work_with_homework():
 
                             subject=new_subject,
                             task=new_task,
-                            photos=photos_json
+                            photos=photos_path
                         )
 
                         if st.session_state.new_subject:
@@ -116,10 +113,11 @@ def work_with_homework():
                         else:
                             for hw in hws:
                                 if hw.subject == new_subject:
-                                    update_homework(db=db, hw_id=hw.id, new_data=hw_validation)
+                                    update_homework(db=db, hw_id=hw.id, new_data=hw_validation.model_dump())
 
                         st.session_state.subject = None
                         st.session_state.new_subject = False
+                        st.session_state.page = "homework_select"
                         st.rerun()
                     except (ValidationError, ValueError) as e:
                         st.error(f'Ошибка валидации: {e}')
