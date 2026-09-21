@@ -1,8 +1,8 @@
 from crud import *
 from database import *
 from photos_utilits import *
+from validation import *
 
-import json
 import streamlit as st
 from pydantic import ValidationError
 from streamlit_extras.floating_button import floating_button
@@ -31,7 +31,7 @@ def work_with_homework():
                 st.markdown(f'**{hw.subject}**')
                 st.write(hw.task)
                 if hw.photos:
-                    photos = json.loads(hw.photos)
+                    photos = hw.photos
                     for photo_path in photos:
                         st.image(photo_path)
 
