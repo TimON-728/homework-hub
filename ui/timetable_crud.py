@@ -13,6 +13,7 @@ def work_with_timatable():
     db = next(get_db())
 
     if st.session_state.page == 'timetable select':
+        
         pass
 
     db.close()
