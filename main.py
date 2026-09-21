@@ -29,4 +29,5 @@ else:
     if view == 'Домашнее задание':
         work_with_homework()
     elif view == 'Расписание':
+        st.session_state.page = 'timetable select'
         work_with_timatable()

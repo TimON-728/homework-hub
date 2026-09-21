@@ -11,3 +11,8 @@ def work_with_timatable():
     st.subheader('🏠 Место, где вы можете удобно хранить ваше домашнее задание')
 
     db = next(get_db())
+
+    if st.session_state.page == 'timetable select':
+        pass
+
+    db.close()
