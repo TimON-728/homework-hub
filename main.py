@@ -27,6 +27,7 @@ else:
         ["Домашнее задание", "Расписание"]
     )
     if view == 'Домашнее задание':
+        st.session_state.page = 'homework_select'
         work_with_homework()
     elif view == 'Расписание':
         st.session_state.page = 'timetable select'
