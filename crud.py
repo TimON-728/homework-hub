@@ -8,8 +8,6 @@ from photos_utilits import *
 #=============HOMEWORK=============
 #==============CREATE==============
 def add_homework(db: Session, data: HomeworkCreate) -> Homework:
-    old_photos = data.photos
-
     new_hw = Homework(
         subject = data.subject,
         task = data.task,
@@ -23,8 +21,6 @@ def add_homework(db: Session, data: HomeworkCreate) -> Homework:
     db.add(new_hw)
     db.commit()
     db.refresh(new_hw)
-
-    delete_photos(old_photos)
 
     return new_hw
 
@@ -45,13 +41,26 @@ def get_hw_dy_id(db: Session, hw_id: int):
 
 
 #==============UPDATE==============
-def update_homework(db: Session, hw_id: int, new_data: dict):
-    hw = get_hw_dy_id(db, hw_id)
-    if hw:
-        for key, value in new_data.items():
-            setattr(hw, key, value)
-        db.commit()
-        db.refresh(hw)
+def update_homework(db: Session, hw_id: int, new_data: dict) -> Homework:
+    hw = db.query(Homework).get(hw_id)
+    if not hw:
+        return None
+    
+    old_photos = hw.photos or []   # ← СТАРЫЕ фото из БД
+    new_photos = new_data.get("photos", [])
+    
+    # обновляем поля
+    for key, value in new_data.items():
+        setattr(hw, key, value)
+    
+    db.commit()
+    db.refresh(hw)
+    
+    # удаляем только те, что были заменены
+    for path in old_photos:
+        if path not in new_photos:
+            delete_photos([path])
+    
     return hw
 
 
@@ -95,16 +104,16 @@ def read_timetable_by_week(db: Session, city: str, school: str, class_name: str)
 
 
 #==============UPDATE==============
-def update_timetable(db: Session, city: str, school: str, class_name: str, date_on: date, new_timetable: str):
+def update_timetable(db: Session, data: TimetableCreate):
     tt = db.query(TimeTable).filter(
-        TimeTable.city == city,
-        TimeTable.school == school,
-        TimeTable.class_name == class_name,
-        TimeTable.date_on == date_on
+        TimeTable.city == data.city,
+        TimeTable.school == data.school,
+        TimeTable.class_name == data.class_name,
+        TimeTable.date_on == data.date_on
     ).first()
 
     if tt:
-        tt.timetable = new_timetable
+        tt.timetable = data.timetable
         db.commit()
         db.refresh(tt)
     return tt

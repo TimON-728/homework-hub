@@ -1,43 +1,33 @@
 import os
 from uuid import uuid4
+from pathlib import Path
 
+UPLOAD_DIR = Path(__file__).parent / "uploads"
+UPLOAD_DIR.mkdir(exist_ok=True)
 
-UPLOAD_DIR = "uploads"
-os.makedirs(UPLOAD_DIR, exist_ok=True)
+print(f"РАБОЧАЯ ДИРЕКТОРИЯ: {os.getcwd()}")
+print(f"ПАПКА UPLOADS: {UPLOAD_DIR.resolve()}")
+print(f"ПАПКА СУЩЕСТВУЕТ: {UPLOAD_DIR.exists()}")
 
-ALLOWED_EXT = {"jpg", "jpeg", "png", "gif", "webp"}
-MAX_SIZE_MB = 10
-
-
-def save_photos(uploaded_files: list) -> list[str]:
+def save_photos(uploaded_files):
     paths = []
+    for file in uploaded_files:
+        ext = file.name.split(".")[-1].lower()
+        filename = f"{uuid4()}.{ext}"
+        filepath = UPLOAD_DIR / filename
 
-    try:
-        for file in uploaded_files:
-            ext = file.name.split(".")[-1].lower()
+        with open(filepath, "wb") as f:
+            f.write(file.getbuffer())
 
-            if ext not in ALLOWED_EXT:
-                raise ValueError(f"Недопустимое расширение: {ext}")
-
-            if file.size > MAX_SIZE_MB * 1024 * 1024:
-                raise ValueError(f"Файл больше {MAX_SIZE_MB} MB")
-
-            filename = f"{uuid4()}.{ext}"
-            filepath = os.path.join(UPLOAD_DIR, filename)
-
-            with open(filepath, "wb") as f:
-                f.write(file.getbuffer())
-
-            paths.append(filepath)
-
-    except ValueError:
-        delete_photos(paths)
-        raise
+        print(f"ЗАПИСАЛ: {filepath.resolve()}")
+        print(f"ПОСЛЕ ЗАПИСИ СУЩЕСТВУЕТ: {filepath.exists()}")
+        paths.append(str(filepath))
 
     return paths
 
 
 def delete_photos(paths: list[str]) -> None:
     for path in paths:
+        print(f"УДАЛЯЮ: {path}")
         if os.path.exists(path):
             os.remove(path)

@@ -88,8 +88,12 @@ def work_with_homework():
 
                         new_subject = st.session_state.subject
 
-
                         photos_path = save_photos(new_photo)
+                        print(f"Вернулось из save_photos: {photos_path}")
+
+                        import os
+                        for p in photos_path:
+                            print(f"Файл {p} существует: {os.path.exists(p)}")
 
                         reg = Registration(
                             city=city,

@@ -1,6 +1,7 @@
 from ui.registration import Regist
 from ui.homework_crud import work_with_homework
 from ui.timetable_crud import work_with_timatable
+from backups import render_backup_page
 import streamlit as st
 
 
@@ -10,7 +11,9 @@ defaults = {
     "selected_school": None,
     "selected_class": None,
     "subject": None,
-    "new_subject": False
+    "new_subject": False,
+    "date": None,
+    "date_select": " "
 }
 
 for key, value in defaults.items():
@@ -24,11 +27,15 @@ if st.session_state.page in ['city_select', 'school_select', 'class_select']:
 else:
     view = st.sidebar.radio(
         "Что смотрим?",
-        ["Домашнее задание", "Расписание"]
+        ["Домашнее задание", "Расписание", "Сделать бэкап"]
     )
     if view == 'Домашнее задание':
-        st.session_state.page = 'homework_select'
+        if st.session_state.page != 'add_homework':
+            st.session_state.page = 'homework_select'
         work_with_homework()
     elif view == 'Расписание':
-        st.session_state.page = 'timetable select'
+        if st.session_state.page != 'add_timetable':
+            st.session_state.page = 'timetable select'
         work_with_timatable()
+    elif view == "Сделать бэкап":
+        render_backup_page()

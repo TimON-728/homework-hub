@@ -30,7 +30,7 @@ class TimeTable(Base):
     date_on = Column(Date, nullable=True)
 
     __table_args__ = (
-        UniqueConstraint('city', 'school', 'class_name', name = 'unique_class'),
+        UniqueConstraint('city', 'school', 'class_name', 'date_on', name = 'unique_date'),
     )
 
 Base.metadata.create_all(engine)
