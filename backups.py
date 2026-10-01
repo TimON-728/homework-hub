@@ -1,3 +1,4 @@
+import os
 import io
 import zipfile
 import streamlit as st
@@ -14,7 +15,7 @@ def render_backup_page():
 
     # Получаем код из secrets
     try:
-        SECRET_CODE = st.secrets["DB_BACKUP_CODE"]
+        SECRET_CODE = os.getenv("DB_BACKUP_CODE")   
     except KeyError:
         st.error("Код не настроен в secrets")
         return
