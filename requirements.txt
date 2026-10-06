@@ -2,5 +2,5 @@ streamlit
 pydantic
 sqlalchemy
 streamlit-extras
-psycopg2-binary
+psycopg[binary]
 filestack-python

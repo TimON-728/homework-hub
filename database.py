@@ -2,10 +2,12 @@ import os
 from sqlalchemy import create_engine
 from sqlalchemy.orm import declarative_base, sessionmaker
 
-# Локально — SQLite, на Render — Postgres из Neon
 DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./homework.db")
 
-# Для Render нужен connect_args для SQLite, для Postgres — нет
+# psycopg3 требует явного указания драйвера
+if DATABASE_URL.startswith("postgresql://"):
+    DATABASE_URL = DATABASE_URL.replace("postgresql://", "postgresql+psycopg://", 1)
+
 if DATABASE_URL.startswith("sqlite"):
     engine = create_engine(DATABASE_URL, connect_args={"check_same_thread": False})
 else:
