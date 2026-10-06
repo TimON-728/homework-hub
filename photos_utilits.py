@@ -9,7 +9,7 @@ def save_photos(uploaded_files: list) -> list[str]:
     urls = []
     for file in uploaded_files:
         # Streamlit UploadedFile — file-like объект
-        new_filelink = client.upload(fileobj=file)
+        new_filelink = client.upload(file_obj=file)
         urls.append(new_filelink.url)
     return urls
 
