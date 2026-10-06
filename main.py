@@ -1,7 +1,6 @@
 from ui.registration import Regist
 from ui.homework_crud import work_with_homework
 from ui.timetable_crud import work_with_timatable
-from backups import render_backup_page
 import streamlit as st
 
 
@@ -27,7 +26,7 @@ if st.session_state.page in ['city_select', 'school_select', 'class_select']:
 else:
     view = st.sidebar.radio(
         "Что смотрим?",
-        ["Домашнее задание", "Расписание", "Сделать бэкап"]
+        ["Домашнее задание", "Расписание"]
     )
     if view == 'Домашнее задание':
         if st.session_state.page != 'add_homework':
@@ -37,5 +36,3 @@ else:
         if st.session_state.page != 'add_timetable':
             st.session_state.page = 'timetable select'
         work_with_timatable()
-    elif view == "Сделать бэкап":
-        render_backup_page()

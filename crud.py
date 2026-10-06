@@ -42,7 +42,7 @@ def get_hw_dy_id(db: Session, hw_id: int):
 
 #==============UPDATE==============
 def update_homework(db: Session, hw_id: int, new_data: dict) -> Homework:
-    hw = db.query(Homework).get(hw_id)
+    hw = db.get(Homework, hw_id)
     if not hw:
         return None
     

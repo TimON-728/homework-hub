@@ -1,33 +1,27 @@
 import os
-from uuid import uuid4
-from pathlib import Path
+from filestack import Client
 
-UPLOAD_DIR = Path(__file__).parent / "uploads"
-UPLOAD_DIR.mkdir(exist_ok=True)
+FILESTACK_API_KEY = os.getenv("FILESTACK_API_KEY")
 
-print(f"РАБОЧАЯ ДИРЕКТОРИЯ: {os.getcwd()}")
-print(f"ПАПКА UPLOADS: {UPLOAD_DIR.resolve()}")
-print(f"ПАПКА СУЩЕСТВУЕТ: {UPLOAD_DIR.exists()}")
 
-def save_photos(uploaded_files):
-    paths = []
+def save_photos(uploaded_files: list) -> list[str]:
+    client = Client(FILESTACK_API_KEY)
+    urls = []
     for file in uploaded_files:
-        ext = file.name.split(".")[-1].lower()
-        filename = f"{uuid4()}.{ext}"
-        filepath = UPLOAD_DIR / filename
-
-        with open(filepath, "wb") as f:
-            f.write(file.getbuffer())
-
-        print(f"ЗАПИСАЛ: {filepath.resolve()}")
-        print(f"ПОСЛЕ ЗАПИСИ СУЩЕСТВУЕТ: {filepath.exists()}")
-        paths.append(str(filepath))
-
-    return paths
+        # Streamlit UploadedFile — file-like объект
+        new_filelink = client.upload(fileobj=file)
+        urls.append(new_filelink.url)
+    return urls
 
 
-def delete_photos(paths: list[str]) -> None:
-    for path in paths:
-        print(f"УДАЛЯЮ: {path}")
-        if os.path.exists(path):
-            os.remove(path)
+def delete_photos(urls: list[str]) -> None:
+    if not urls:
+        return
+    client = Client(FILESTACK_API_KEY)
+    for url in urls:
+        # Filestack handle — это последняя часть URL после последнего /
+        handle = url.rstrip("/").split("/")[-1]
+        try:
+            client.delete(handle)
+        except Exception as e:
+            print(f"Не удалось удалить {handle}: {e}")
