@@ -1,5 +1,4 @@
 from crud import *
-from database import *
 from photos_utilits import *
 from validation import *
 
@@ -12,8 +11,6 @@ def work_with_homework():
     st.title('📚 HOMEWORK-HUB 📚')
     st.subheader('🏠 Место, где вы можете удобно хранить ваше домашнее задание')
 
-    db = next(get_db())
-
     if st.session_state.page == 'homework_select':
         st.markdown('### Смотрите и редактируйте ДЗ')
 
@@ -21,7 +18,7 @@ def work_with_homework():
         school = st.session_state.selected_school
         class_name = st.session_state.selected_class
 
-        hws = read_homework_by_class(db=db, city=city, school=school, class_name=class_name)
+        hws = read_homework_by_class(city=city, school=school, class_name=class_name)
 
         cols = st.columns(4)
 
@@ -31,10 +28,8 @@ def work_with_homework():
                 st.markdown(f'**{hw.subject}**')
                 st.write(hw.task)
                 if hw.photos:
-                    photos = hw.photos
-                    for photo_path in photos:
+                    for photo_path in hw.photos:
                         st.image(photo_path)
-
 
         if floating_button("Добавить", key="add_btn", icon=":material/add:"):
             st.session_state.page = "add_homework"
@@ -45,9 +40,9 @@ def work_with_homework():
 
         city = st.session_state.selected_city
         school = st.session_state.selected_school
-        class_name = st.session_state.selected_class 
+        class_name = st.session_state.selected_class
 
-        hws = read_homework_by_class(db=db, city=city, school=school, class_name=class_name)
+        hws = read_homework_by_class(city=city, school=school, class_name=class_name)
 
         if st.session_state.subject is None:
             cols = st.columns(4)
@@ -59,13 +54,13 @@ def work_with_homework():
                         st.session_state.subject = hw.subject
                         st.rerun()
 
-            if st.button("➕ Добавить передмет", use_container_width=True):
+            if st.button("➕ Добавить предмет", use_container_width=True):
                 st.session_state.subject = "add subject"
                 st.rerun()
 
             if floating_button("Назад", key="bck_btn"):
-                        st.session_state.page = "homework_select"
-                        st.rerun()
+                st.session_state.page = "homework_select"
+                st.rerun()
 
         elif st.session_state.subject is not None:
             if st.session_state.subject == "add subject":
@@ -89,11 +84,6 @@ def work_with_homework():
                         new_subject = st.session_state.subject
 
                         photos_path = save_photos(new_photo)
-                        print(f"Вернулось из save_photos: {photos_path}")
-
-                        import os
-                        for p in photos_path:
-                            print(f"Файл {p} существует: {os.path.exists(p)}")
 
                         reg = Registration(
                             city=city,
@@ -112,12 +102,11 @@ def work_with_homework():
                         )
 
                         if st.session_state.new_subject:
-                            add_homework(db=db, data=hw_validation)
-
+                            add_homework(data=hw_validation)
                         else:
                             for hw in hws:
                                 if hw.subject == new_subject:
-                                    update_homework(db=db, hw_id=hw.id, new_data=hw_validation.model_dump())
+                                    update_homework(hw_id=hw.id, new_data=hw_validation.model_dump())
 
                         st.session_state.subject = None
                         st.session_state.new_subject = False
@@ -131,5 +120,3 @@ def work_with_homework():
                     st.session_state.subject = None
                     st.session_state.new_subject = False
                     st.rerun()
-
-    db.close()

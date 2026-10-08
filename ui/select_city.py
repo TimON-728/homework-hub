@@ -1,24 +1,16 @@
 import streamlit as st
 
-from models import *
 from validation import *
 from crud import *
-from database import *
 
 
 def select_city():
     st.title('📚 HOMEWORK-HUB 📚')
     st.subheader('🏠 Место, где вы можете удобно хранить ваше домашнее задание')
 
-    # Получаем сессию
-    db = next(get_db())
-    city_list = []
+    city_list = read_all_cities()
 
-    results = db.query(Homework).with_entities(Homework.city).all()
-
-    city_list = list(set(city[0] for city in results))   
-
-    if st.session_state.selected_city is None: 
+    if st.session_state.selected_city is None:
         st.markdown('#### Выберите город или добавте новый')
         cols = st.columns(4)
 
@@ -37,21 +29,19 @@ def select_city():
         new_city = st.text_input('Введите название нового города')
 
         col1, col2 = st.columns(2)
-        if st.session_state.selected_city == "add city":
-            with col1:
-                if st.button('Подтвердить'):
-                    if new_city and new_city.strip():
-                        st.session_state.selected_city = new_city
-                        st.rerun()
-                    else:
-                        st.warning('Название города не может быть пустым')
-
-            with col2:
-                if st.button('Назад'):
-                    st.session_state.selected_city = None
+        with col1:
+            if st.button('Подтвердить'):
+                if new_city and new_city.strip():
+                    st.session_state.selected_city = new_city
                     st.rerun()
+                else:
+                    st.warning('Название города не может быть пустым')
+
+        with col2:
+            if st.button('Назад'):
+                st.session_state.selected_city = None
+                st.rerun()
 
     if st.session_state.selected_city not in ["add city", None]:
         st.session_state.page = 'school_select'
-        db.close()
         st.rerun()

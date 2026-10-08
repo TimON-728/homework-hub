@@ -1,5 +1,4 @@
 from crud import *
-from database import *
 from validation import *
 from photos_utilits import *
 
@@ -7,6 +6,7 @@ import streamlit as st
 from streamlit_extras.floating_button import floating_button
 from pydantic import ValidationError
 from datetime import date, timedelta
+
 
 def date_of_weekday(weekday: int, base_date: date = None) -> date:
     if base_date is None:
@@ -19,14 +19,12 @@ def work_with_timatable():
     st.title('📚 HOMEWORK-HUB 📚')
     st.subheader('🏠 Место, где вы можете удобно хранить ваше домашнее задание')
 
-    db = next(get_db())
-
     if st.session_state.page == 'timetable select':
         city = st.session_state.selected_city
         school = st.session_state.selected_school
         class_name = st.session_state.selected_class
 
-        tts = read_timetable_by_week(db=db, city=city, school=school, class_name=class_name)
+        tts = read_timetable_by_week(city=city, school=school, class_name=class_name)
 
         cols = st.columns(2)
 
@@ -54,17 +52,17 @@ def work_with_timatable():
             if st.button('Сегодня'):
                 st.session_state.date = date.today()
                 st.session_state.date_select = " "
-                st.rerun()            
+                st.rerun()
 
         with col2:
             if st.button('Завтра'):
                 st.session_state.date = date.today() + timedelta(days=1)
                 st.session_state.date_select = " "
-                st.rerun()            
+                st.rerun()
 
         with col3:
             options = {
-                " ": None,   # маркер "не выбрано"
+                " ": None,
                 "Понедельник": date_of_weekday(0),
                 "Вторник": date_of_weekday(1),
                 "Среда": date_of_weekday(2),
@@ -73,15 +71,15 @@ def work_with_timatable():
                 "Суббота": date_of_weekday(5),
                 "Воскресенье": date_of_weekday(6),
             }
-            
+
             chosen_day = st.selectbox(
                 "Другая дата",
                 options=list(options.keys()),
                 format_func=lambda d: " " if d == " " else f"{d} ({options[d].strftime('%d.%m.%Y')})",
                 key="date_select"
             )
-            
-            if chosen_day != " ":   # ← только если реально выбрали
+
+            if chosen_day != " ":
                 st.session_state.date = options[chosen_day]
 
         new_tt = st.file_uploader('Вставте фотографию расписания')
@@ -97,13 +95,13 @@ def work_with_timatable():
                 else:
                     try:
                         photos_path = save_photos([new_tt])
-        
+
                         reg = Registration(
                             city=city,
                             school=school,
                             class_name=class_name
                         )
-            
+
                         tt_validation = TimetableCreate(
                             city=reg.city,
                             school=reg.school,
@@ -114,26 +112,23 @@ def work_with_timatable():
                         )
 
                         update = False
-
-                        tts = read_timetable_by_week(db=db, city=city, school=school, class_name=class_name)
+                        tts = read_timetable_by_week(city=city, school=school, class_name=class_name)
                         for tt in tts:
                             if new_date == tt.date_on:
                                 update = True
                                 break
 
                         if update:
-                            update_timetable(db=db, data=tt_validation)
+                            update_timetable(data=tt_validation)
                         else:
-                            add_timetable(db=db, data=tt_validation)
+                            add_timetable(data=tt_validation)
 
                         st.session_state.page = "timetable select"
-                        st.rerun()        
+                        st.rerun()
 
                     except (ValidationError, ValueError) as e:
                         st.error(f'Ошибка валидации: {e}')
-        
+
         with col2:
             if st.button('Назад'):
                 st.rerun()
-
-    db.close()
