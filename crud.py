@@ -172,13 +172,14 @@ def read_timetable_by_week(city: str, school: str, class_name: str):
     today = date.today()
     week_back = today - timedelta(days=7)
     data = load_all_data(_get_version())
-    return [
+    result = [
         tt for tt in data["timetable"]
         if tt.city == city and tt.school == school
         and tt.class_name == class_name
         and tt.date_on is not None
         and tt.date_on >= week_back
     ]
+    return sorted(result, key=lambda tt: tt.date_on)
 
 
 #==============UPDATE==============
