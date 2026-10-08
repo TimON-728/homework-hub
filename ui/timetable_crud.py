@@ -26,14 +26,11 @@ def work_with_timatable():
 
         tts = read_timetable_by_week(city=city, school=school, class_name=class_name)
 
-        cols = st.columns(2)
+        days_ru = ["Понедельник", "Вторник", "Среда", "Четверг", "Пятница", "Суббота", "Воскресенье"]
 
-        for i, tt in enumerate(tts):
-            col_id = i % 2
-            with cols[col_id]:
-                st.image(tt.timetable)
-                days_ru = ["Понедельник", "Вторник", "Среда", "Четверг", "Пятница", "Суббота", "Воскресенье"]
-                st.write(days_ru[tt.date_on.weekday()])
+        for tt in tts:   # ← один столбец, без st.columns
+            st.image(tt.timetable)
+            st.write(days_ru[tt.date_on.weekday()])
 
         if floating_button("Добавить", key="add_btn_2", icon=":material/add:"):
             st.session_state.page = "add_timetable"
