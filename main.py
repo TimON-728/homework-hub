@@ -1,8 +1,10 @@
 from ui.registration import Regist
 from ui.homework_crud import work_with_homework
 from ui.timetable_crud import work_with_timatable
+from crud import load_all_data
 import streamlit as st
 
+load_all_data(0)
 
 defaults = {
     "page": "city_select",

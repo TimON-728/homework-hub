@@ -11,7 +11,7 @@ from photos_utilits import *
 # КЭШ ВСЕЙ БД (обновляется раз в 60 секунд)
 # ═══════════════════════════════════════════
 
-@st.cache_data(ttl=60)
+@st.cache_data(ttl=1800)
 def load_all_data(version: int = 0):
     """Загружает всю БД в память. Аргумент version сбрасывает кэш после записи."""
     from database import get_db
